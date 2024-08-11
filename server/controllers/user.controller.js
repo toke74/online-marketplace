@@ -4,6 +4,7 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { asyncErrorHandler } from "../middlewares/catchAsyncerrors.js";
 import { createActivationToken } from "../utils/activationCode.js";
 import sendEmail from "../utils/sendMail.js";
+import { sendRefreshAndAccessToken } from "../utils/sendRefreshAndAccessToken.js";
 
 // @desc    Register user
 // @route   POST /api/v1/user/register
@@ -92,4 +93,87 @@ export const activateUser = asyncErrorHandler(async (req, res, next) => {
   res.status(201).json({
     success: true,
   });
+});
+
+// @desc    Login user
+// @route   POST /api/v1/user/login
+// @access  Public
+export const loginUser = asyncErrorHandler(async (req, res, next) => {
+  //Get email and password from user
+  const { email, password } = req.body;
+
+  //check email and password empty or not
+  if (!email || !password) {
+    return next(new ErrorHandler("Please provide an email and password", 400));
+  }
+
+  // find  user in DB
+  const user = await User.findOne({ email }).select("+password");
+
+  // if user not exist in DB throw error
+  if (!user) {
+    return next(new ErrorHandler("Invalid credentials", 401));
+  }
+
+  //if user tries to login by their Google service provider account, throw error
+  if (user.provider === "google") {
+    return next(
+      new ErrorHandler(
+        "Please login with your Google service provider account",
+        400
+      )
+    );
+  }
+  //if user tries to login by their Github service provider account, throw error
+  if (user.provider === "github") {
+    return next(
+      new ErrorHandler(
+        "Please login with your  Github service provider account",
+        400
+      )
+    );
+  }
+
+  //if user exist  in DB, Check if the user  verified their email
+  if (!user.isVerified) {
+    //If user not verified their email address,  Send activation code to the user
+    const activationToken = createActivationToken(user._id);
+
+    const activationCode = activationToken.ActivationCode;
+
+    const name = user.name;
+
+    const message = activationCode;
+    const ejsUrl = `welcome.ejs`;
+
+    try {
+      //send activation code to user email
+      await sendEmail({
+        email: user.email,
+        subject: "Activate your account",
+        message,
+        name,
+        ejsUrl,
+      });
+
+      res.status(200).json({
+        success: false,
+        message: `Please check your email ${user.email} to activate your account!`,
+        activationToken: activationToken.token,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+
+  //if verified their email, Check  password matches
+  const isMatch = await user.comparePassword(password);
+
+  // if not match, throw error
+  if (!isMatch) {
+    return next(new ErrorHandler("Invalid credentials", 401));
+  }
+
+  //import methods to generate access Token and refresh token
+  sendRefreshAndAccessToken(user, 200, res);
 });

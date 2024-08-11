@@ -15,7 +15,7 @@
 5. After user created in DB, send activation code to user email
 6. And also send activation token to the client
 
-## 1.1) Steps to activate user
+## 1.2) Steps to activate user
 
 ```js
 // @desc    Activate user
@@ -31,3 +31,23 @@
 6. if user exist and isVerified field is true, throw the error ask user to login
 7. if user not exist and isVerified field is false, update the user as verified
 8. Then send success message to client
+
+## 1.3) Steps to login user
+
+```js
+// @desc    Activate user
+// @route   POST /api/v1/user/activate-user
+// @access  Public
+```
+
+1. Get email and password from client by req.body
+2. check email and password empty or not
+3. find user in DB
+4. if user not exist in DB throw error
+5. if user tries to login by their Google service provider account, throw error
+6. if user tries to login by their Github service provider account, throw error
+7. if user exist in DB, Check if the user verified their ema
+8. If user not verified their email address, Send activation code to the user
+9. if verified their email, Check password matches
+10. if password not match, throw error
+11. if very thing is ok , send access Token and refresh token to client by cookies
