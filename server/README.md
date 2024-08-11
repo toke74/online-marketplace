@@ -1,6 +1,6 @@
 # 1. User Controller
 
-## 1.1) Steps to register users
+## 1.1) Steps to register user
 
 ```js
 // @desc Register user
@@ -15,10 +15,19 @@
 5. After user created in DB, send activation code to user email
 6. And also send activation token to the client
 
-## 1.1) Steps to register users
+## 1.1) Steps to activate user
 
 ```js
-// @desc Register user
-// @route POST /api/v1/user/register
-// @access Public
+// @desc    Activate user
+// @route   POST /api/v1/user/activate-user
+// @access  Public
 ```
+
+1. Get activation token and activation code from req.body
+2. verify activation token
+3. if activation token is valid, then verify activation code. if not valid, throw error
+4. if activation code is valid, find user
+5. if user not exist, throw the error
+6. if user exist and isVerified field is true, throw the error ask user to login
+7. if user not exist and isVerified field is false, update the user as verified
+8. Then send success message to client
