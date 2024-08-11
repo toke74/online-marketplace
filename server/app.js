@@ -3,6 +3,10 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
+//import local file
+import ErrorHandlerMiddleware from "./middleware/error.js";
+import "dotenv/config";
+
 export const app = express();
 
 //passing bodyParser middleware
@@ -33,3 +37,6 @@ app.all("*", (req, res, next) => {
   err.statusCode = 404;
   next(err);
 });
+
+// it's for ErrorHandling
+app.use(ErrorHandlerMiddleware);
