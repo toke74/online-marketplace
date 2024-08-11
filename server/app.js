@@ -5,6 +5,7 @@ import cors from "cors";
 
 //import local file
 import ErrorHandlerMiddleware from "./middlewares/error.js";
+import userRouter from "./routes/user.route.js";
 import "dotenv/config";
 
 export const app = express();
@@ -22,6 +23,9 @@ app.use(
     credentials: true,
   })
 );
+
+//routes
+app.use("/api/v1/user", userRouter);
 
 //testing route
 app.get("/test", (req, res, next) => {
