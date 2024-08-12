@@ -4,6 +4,7 @@ import {
   activateUser,
   loginUser,
   resendActivationCode,
+  socialAuth,
 } from "../controllers/user.controller.js";
 
 const userRouter = express.Router();
@@ -19,5 +20,8 @@ userRouter.post("/login", loginUser);
 
 //Resend Activation code
 userRouter.post("/resend-activation-code", resendActivationCode);
+
+//Oauth routes
+userRouter.post("/social-auth", socialAuth);
 
 export default userRouter;

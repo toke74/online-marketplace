@@ -66,3 +66,18 @@
 4. if user exist and isVerified field is true, throw the error ask user to login
 5. if user exist and isVerified field is false, Send activation code to the user
 6. finally send success message to client
+
+## 1.4) Steps to implement Social Auth
+
+```js
+// @desc Social Auth
+// @route POST /api/v1/user/social-auth
+// @access Public
+```
+
+1. Get user info from client which we get it from social auth provider
+2. Find if user exist by its email
+3. If user not exist, generate password and save user in db
+4. After saving user in db, generate access and refresh token and send it to client
+5. If user exist in db, check if user register with local login with that email, if it is throw error
+6. If user exist in db and register with social auth, login the user by generate access and refresh token and send it to client

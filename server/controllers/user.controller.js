@@ -232,3 +232,46 @@ export const resendActivationCode = asyncErrorHandler(
     }
   }
 );
+
+// @desc Social Auth
+// @route POST /api/v1/user/social-auth
+// @access Public
+export const socialAuth = asyncErrorHandler(async (req, res, next) => {
+  //Get user info from client which we get it from social auth provider
+  const { email, name, photo, provider } = req.body;
+
+  //Find if user exist by its email
+  const user = await User.findOne({ email });
+
+  //If user not exist, generate password and save user in db
+  if (!user) {
+    const generatePassword =
+      Math.random().toString(36).slice(-8) +
+      Math.random().toString(36).slice(-8);
+
+    const newUser = await User.create({
+      email,
+      name,
+      password: generatePassword,
+      avatar: photo,
+      isVerified: true,
+      provider,
+    });
+
+    // After saving user in db, generate access and refresh token and send it to client
+    sendRefreshAndAccessToken(newUser, 200, res);
+  } else {
+    //If user exist in db, check if user register with local login with that email, if it is throw error
+    if (user.provider === "local") {
+      return next(
+        new ErrorHandler(
+          "you have account with us, please login with your email and password",
+          400
+        )
+      );
+    } else {
+      //if user exist in db and register with social auth, login the user by generate access and refresh token and send it to client
+      sendRefreshAndAccessToken(user, 200, res);
+    }
+  }
+});
