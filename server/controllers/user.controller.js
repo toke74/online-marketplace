@@ -177,3 +177,58 @@ export const loginUser = asyncErrorHandler(async (req, res, next) => {
   //import methods to generate access Token and refresh token
   sendRefreshAndAccessToken(user, 200, res);
 });
+
+// @desc    Resend Activation code
+// @route   POST /api/v1/user/resend-activation-code
+// @access  Public
+export const resendActivationCode = asyncErrorHandler(
+  async (req, res, next) => {
+    //Get user email from client by req.body
+    const { email } = req.body;
+
+    //find user in db by its email
+    const user = await User.findOne({ email });
+
+    // if user not exist, throw the error
+    if (!user) {
+      return next(new ErrorHandler("User not exist ", 400));
+    }
+
+    //if user exist and isVerified field is true, throw the error ask user to login
+    if (user.isVerified) {
+      return next(
+        new ErrorHandler("Your email is verified, Please login ", 400)
+      );
+    }
+
+    // if user   exist and  isVerified field is false, Send activation code to the user
+    const activationToken = createActivationToken(user._id);
+
+    const activationCode = activationToken.ActivationCode;
+
+    const name = user.name;
+
+    const message = activationCode;
+    const ejsUrl = `welcome.ejs`;
+
+    try {
+      //send activation code to user email
+      await sendEmail({
+        email: user.email,
+        subject: "Activate your account",
+        message,
+        name,
+        ejsUrl,
+      });
+
+      //finally send success message to client
+      res.status(200).json({
+        success: false,
+        message: `Please check your email ${user.email} to activate your account!`,
+        activationToken: activationToken.token,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);

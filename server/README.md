@@ -51,3 +51,18 @@
 9. if verified their email, Check password matches
 10. if password not match, throw error
 11. if very thing is ok , send access Token and refresh token to client by cookies
+
+## 1.4) Steps to Resend Activation code
+
+```js
+// @desc    Resend Activation code
+// @route   POST /api/v1/user/resend-activation-code
+// @access  Public
+```
+
+1. Get user email from client by req.body
+2. find user in db by its email
+3. if user not exist, throw the error
+4. if user exist and isVerified field is true, throw the error ask user to login
+5. if user exist and isVerified field is false, Send activation code to the user
+6. finally send success message to client
