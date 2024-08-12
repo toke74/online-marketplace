@@ -81,3 +81,30 @@
 4. After saving user in db, generate access and refresh token and send it to client
 5. If user exist in db, check if user register with local login with that email, if it is throw error
 6. If user exist in db and register with social auth, login the user by generate access and refresh token and send it to client
+
+## 1.5) Steps to implement to Logout user
+
+```js
+// @desc    Logout user
+// @route   GET /api/v1/user/logout
+// @access  Public
+```
+
+1. Clear the cookie
+2. Send success message to client
+
+## 1.6) Steps to implement Authenticate User middleware
+
+```js
+// @desc   Authenticate User middleware
+// @access  Private
+```
+
+1. Get access token from req.cookies
+2. If access token empty, throw error
+3. If access token not empty, verify validity of the token
+4. If not valid token, throw error
+5. If it is valid token, find user from db by using decoded ID from jwt.verify()
+6. If user not found in db, throw error
+7. If user exist in db, assign to req.user
+8. then pass to next function

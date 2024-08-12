@@ -275,3 +275,19 @@ export const socialAuth = asyncErrorHandler(async (req, res, next) => {
     }
   }
 });
+
+// @desc    Logout user
+// @route   GET /api/v1/user/logout
+// @access  Public
+export const logoutUser = asyncErrorHandler(async (req, res, next) => {
+  //Clear the cookie
+  res.cookie("access_token", "", { maxAge: 1 });
+  res.cookie("refresh_token", " ", { maxAge: 1 });
+
+  //Send success message to client
+  res.status(200).json({
+    success: true,
+    accessToken: "",
+    message: "Logged out successfully",
+  });
+});

@@ -5,7 +5,10 @@ import {
   loginUser,
   resendActivationCode,
   socialAuth,
+  logoutUser,
 } from "../controllers/user.controller.js";
+
+import { isAuthenticated } from "../middlewares/protected.js";
 
 const userRouter = express.Router();
 
@@ -23,5 +26,8 @@ userRouter.post("/resend-activation-code", resendActivationCode);
 
 //Oauth routes
 userRouter.post("/social-auth", socialAuth);
+
+//Logout user route
+userRouter.get("/logout", isAuthenticated, logoutUser);
 
 export default userRouter;
