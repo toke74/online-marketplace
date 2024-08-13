@@ -67,7 +67,7 @@
 5. if user exist and isVerified field is false, Send activation code to the user
 6. finally send success message to client
 
-## 1.4) Steps to implement Social Auth
+## 1.5) Steps to implement Social Auth
 
 ```js
 // @desc Social Auth
@@ -82,7 +82,7 @@
 5. If user exist in db, check if user register with local login with that email, if it is throw error
 6. If user exist in db and register with social auth, login the user by generate access and refresh token and send it to client
 
-## 1.5) Steps to implement to Logout user
+## 1.6) Steps to implement to Logout user
 
 ```js
 // @desc    Logout user
@@ -93,7 +93,7 @@
 1. Clear the cookie
 2. Send success message to client
 
-## 1.6) Steps to implement Authenticate User middleware
+## 1.7) Steps to implement Authenticate User middleware
 
 ```js
 // @desc   Authenticate User middleware
